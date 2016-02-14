@@ -1,0 +1,1 @@
+export const USER_AUTHED = 'USER_AUTHED';
