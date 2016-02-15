@@ -1,35 +1,25 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import Login from '../components/Login';
-import {Grid,Col,Row} from 'react-bootstrap';
-
+//import Login from '../components/Login';
+import PageContainer from '../containers/PageContainer';
+import { Router, Route, browserHistory } from 'react-router'
 
 class App extends Component {
 
-	renderContent() {
-		const {authed,username} = this.props.user;
-		if(!authed){
-			return <Login {...this.props}/>;
-		}else{
-			return <p>{username}</p>;
-		}	
-	}
-
 	render() {
-		return (<Grid fluid={true}>
-					<Col xs={4} md={4} lg={4}>
-						{this.renderContent()}
-					</Col>
-				</Grid>
-				);
-	}
+		return (
+			<Router history={browserHistory}>
+				<Route path="/" component={PageContainer}>
+				</Route>
+			</Router>
+		);
+			}
 }
 
-function mapStateToProps(state) {
+/*function mapStateToProps(state) {
 	const {user} = state;
 	return {
 		user: user
 	};
-}
+}*/
 
-export default connect(mapStateToProps)(App);
+export default App;

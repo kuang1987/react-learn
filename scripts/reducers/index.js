@@ -1,22 +1,10 @@
-import {combineReducers} from 'redux';
-import * as types from '../constants/actionTypes';
+import { combineReducers } from 'redux'
+import { routeReducer } from 'react-router-redux'
+import auth from './auth'
 
-const initialState = {
-	user: {
-		   authed: false,
-		   username: ""
-		  }
-}
-
-const rootReducer = function(state=initialState,action){
-	switch(action.type){
-		case types.USER_AUTHED:
-			return Object.assign({}, state, {
-            user: action.user
-        	});
-		default:
-			return state;
-	}
-}
+const rootReducer = combineReducers({
+	auth,
+	routing: routeReducer
+})
 
 export default rootReducer;

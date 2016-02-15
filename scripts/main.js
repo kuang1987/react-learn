@@ -5,12 +5,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import App from './containers/App';
-import configureStore from './store/configureStore';
+import {configureStore,reduxRouterMiddleware} from './store/configureStore';
 
 console.log(Provider);
 
 const store = configureStore();
-
 
 
 function renderDevTools(store){
