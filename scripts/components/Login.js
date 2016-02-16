@@ -39,12 +39,12 @@ class Login extends Component {
       let {status,user} = loginUser(username,password);
       if(status){
           dispatch(authUser(user));
-          /*const {state} = this.props.location
-          if(state && state.nextPathname){
-              dispatch(routeActions.push(state.nextPathname))
+          const {query} = this.props.location
+          if(query && query.next){
+              dispatch(routeActions.push(query.next))
           }else{
               dispatch(routeActions.push('/'))
-          }*/
+          }
           
       }else{
           this.setState({status:false,reason:"用户名/密码错误!"})

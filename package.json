@@ -8,6 +8,7 @@
     "start-win-dev": "set NODE_ENV=dev&&webpack-dev-server --progress --colors --hot --inline --content-base ./server/public --config ./webpack.config.js --display-error-detail --history-api-fallback",
     "start-win-test": "set NODE_ENV=test&&webpack-dev-server --progress --colors --hot --inline --content-base ./server/public --config ./webpack.config.js --display-error-detail --history-api-fallback",
     "start-win-prd": "set NODE_ENV=prd&&webpack-dev-server --progress --colors --hot --inline --content-base ./server/public --config ./webpack.config.js --display-error-detail --history-api-fallback",
+    "start-mac-dev": "NODE_ENV=dev&&webpack-dev-server --progress --colors --hot --inline --content-base ./server/public --config ./webpack.config.js --display-error-detail --history-api-fallback",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
