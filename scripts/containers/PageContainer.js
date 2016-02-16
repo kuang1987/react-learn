@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import MainNav from '../components/MainNav'
-import {Grid,Col,Row} from 'react-bootstrap'
+import {Grid,Col,Row, Navbar} from 'react-bootstrap'
 
 class PageContainer extends Component {
 
     render() {
 		return (
-			<Grid fliud={true}>
+			<Grid fluid={true}>
 				<MainNav {...this.props} />
 				{this.props.children}
 			</Grid>)
@@ -16,7 +16,7 @@ class PageContainer extends Component {
 }
 
 function mapStateToProps(state) {
-	const {user} = state;
+	const {user} = state.auth;
 	return {
 		user: user
 	};
