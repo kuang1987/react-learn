@@ -1,1 +1,8 @@
+//for auth
 export const USER_AUTHED = 'USER_AUTHED';
+
+//for timer job
+export const FETCHING_TIMER_JOBS = 'FETCHING_TIMER_JOBS';
+export const FETCH_TIMER_JOBS_SUCCESS = 'FETCH_TIMER_JOBS_SUCCESS';
+export const FETCH_TIMER_JOBS_FAIL = 'FETCH_TIMER_JOBS_FAIL';
+export const TIMER_JOB_SELECTED = 'TIMER_JOB_SELECTED';

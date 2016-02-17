@@ -2,8 +2,8 @@ import * as types from '../constants/actionTypes';
 
 const initialState = {
 	user: {
-		   authed: false,
-		   username: ""
+		   authed: true,
+		   username: "kongxiangxiang"
 		  }
 }
 
