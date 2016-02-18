@@ -3,9 +3,17 @@ import * as types from '../constants/actionTypes';
 export function fetchTimerJobs(search=""){
 	return (dispatch) =>{
 		const fetchstage = 'fetching';
+		dispatch(timerJobUnselected());
 		dispatch(beginFetchingTimerJobs(fetchstage));
 		dispatch(doFetchTimerJobs(search));
 	}
+}
+
+export function timerJobUnselected(){
+	return {
+		type: types.TIMER_JOB_SELECTED,
+		selectedJobId: undefined
+	}	
 }
 
 export function timerJobSelected(jobId){
@@ -15,10 +23,34 @@ export function timerJobSelected(jobId){
 	}
 }
 
+export function editJob(type){
+	return {
+		type: types.EDIT_JOB,
+		editJob: type
+	}
+}
+
+export function closeEditJobModal(){
+	return {
+		type: types.EDIT_JOB,
+		editJob: ""
+	}
+}
+
 function doFetchTimerJobs(search){
 	return (dispatch) =>{
 		const joblist = [{"jobId":"123","jobName":"first Job","jobRunning":true},{"jobId":"456","jobName":"second Job","jobRunning":false}];
-		setTimeout(()=>dispatch(fetchTimerJobsSuccess(joblist)),2000);
+		let searchJobList = [];
+		if(search!=""){
+			for(let row in joblist){
+				if(joblist[row].jobId == search || joblist[row].jobName == search){
+					searchJobList.push(joblist[row]);
+				}
+			}
+		}else{
+			searchJobList = joblist;
+		}
+		setTimeout(()=>dispatch(fetchTimerJobsSuccess(searchJobList)),2000);
 	}
 }
 

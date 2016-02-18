@@ -3,7 +3,8 @@ import * as types from '../constants/actionTypes';
 const initialState = {
 		   joblist: [],
 		   fetchstage: "",
-		   selectedJobId: undefined
+		   selectedJobId: undefined,
+		   editJob: ""
 }
 
 export default function(state=initialState,action){
@@ -21,6 +22,10 @@ export default function(state=initialState,action){
 			return Object.assign({}, state, {
 			 selectedJobId: action.selectedJobId
         	});
+        case types.EDIT_JOB:
+			return Object.assign({}, state, {
+			 editJob: action.editJob
+        	});        
 		default:
 			return state;
 	}

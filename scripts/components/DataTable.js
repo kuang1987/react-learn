@@ -17,7 +17,7 @@ class DataTable extends Component {
     
     const {header,joblist} = this.props;
     	return (
-   				<Table responsive striped bordered condensed>
+   				<Table responsive hover>
     				<thead>
                    		<tr>{
                          header.map(function (ele){
