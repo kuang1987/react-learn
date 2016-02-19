@@ -4,7 +4,10 @@ const initialState = {
 		   joblist: [],
 		   fetchstage: "",
 		   selectedJobId: undefined,
-		   editJob: ""
+		   operation: "",
+		   processingJobStatus: "",
+		   result:undefined,
+		   operateJobModalShow:false
 }
 
 export default function(state=initialState,action){
@@ -22,9 +25,37 @@ export default function(state=initialState,action){
 			return Object.assign({}, state, {
 			 selectedJobId: action.selectedJobId
         	});
-        case types.EDIT_JOB:
+        case types.OPEN_OPERATE_JOB_MODAL:
 			return Object.assign({}, state, {
-			 editJob: action.editJob
+			   operateJobModalShow: action.operateJobModalShow,
+			   selectedJobId: action.selectedJobId,
+			   operation:action.operation
+        	});
+        case types.CLOSE_OPERATE_JOB_MODAL:
+			return Object.assign({}, state, {
+			   operateJobModalShow: action.operateJobModalShow,
+			   selectedJobId: action.selectedJobId,
+			   operation:action.operation
+        	});
+        case types.OPERATE_JOB:
+			return Object.assign({}, state, {
+			 operation: action.operation,
+			 processingJobStatus:action.processingJobStatus,
+			 result: action.result
+        	});
+        case types.PROCESSING_JOB:
+			return Object.assign({}, state, {
+             processingJobStatus: action.processingJobStatus
+        	});
+        case types.PROCESSING_JOB_SUCCESS:
+			return Object.assign({}, state, {
+			 result: action.result,
+             processingJobStatus: action.processingJobStatus
+        	});
+        case types.PROCESSING_JOB_FAIL:
+			return Object.assign({}, state, {
+			 result: action.result,
+             processingJobStatus: action.processingJobStatus
         	});        
 		default:
 			return state;

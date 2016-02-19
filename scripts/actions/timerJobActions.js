@@ -23,19 +23,44 @@ export function timerJobSelected(jobId){
 	}
 }
 
-export function editJob(type){
+export function openOperateJobModal(operation,jobId){
+	let processingJobStatus = undefined;
+	if(operation == "create"){
+		processingJobStatus = "success";
+	}
 	return {
-		type: types.EDIT_JOB,
-		editJob: type
+		type: types.OPEN_OPERATE_JOB_MODAL,
+		operateJobModalShow: true,
+		operation: operation,
+		selectedJobId: jobId,
+		processingJobStatus: processingJobStatus
 	}
 }
 
-export function closeEditJobModal(){
+/*export function operateJob(type){
 	return {
-		type: types.EDIT_JOB,
-		editJob: ""
+		type: types.OPERATE_JOB,
+		operation: type
+	}
+}*/
+
+export function closeOperateJobModal(){
+	return {
+		type: types.CLOSE_OPERATE_JOB_MODAL,
+		operation: "",
+		processingJobStatus: "",
+		operateJobModalShow: false,
+		result: undefined,
+		selectedJobId: undefined
 	}
 }
+
+/*export function fetchOne(jobId){
+	return (dispatch) => {
+		dispatch(beginFetchOne());
+		dispatch(doFetchOneJob(jobId));
+	}
+}*/
 
 function doFetchTimerJobs(search){
 	return (dispatch) =>{
@@ -54,11 +79,42 @@ function doFetchTimerJobs(search){
 	}
 }
 
+export function processJob(jobId,operation){
+	return (dispatch) => {
+		dispatch(beginProcessJob());
+		dispatch(doProcessJob(jobId,operation));
+	}
+}
+
+function doProcessJob(jobId){
+	return (dispatch) => {
+		const result = {jobId:jobId,
+						 jobName:"first Job",
+						 jobType:"ecc",
+						 jobScheType:"in",
+						 jobScheParams:"60",
+						 querydsl:"select * from 123",
+						 queryparams:"",
+						 scrpits:"",
+						 es_index:"order",
+						 es_type:"order",
+						 es_document_id:"merchant_order_id"}
+		setTimeout(()=>dispatch(processJobSuccess(result)),2000);
+		//setTimeout(()=>dispatch(processJobFail("获取任务配置信息失败！")),2000);
+	}
+}
+
 function beginFetchingTimerJobs(fetchstage){
 	return {
 		type: types.FETCHING_TIMER_JOBS,
 		fetchstage: fetchstage
 	}
+}
+
+function beginProcessJob(){
+	return {
+		type:types.PROCESSING_JOB,
+		processingJobStatus:"processing"}
 }
 
 function fetchTimerJobsSuccess(joblist){
@@ -74,5 +130,21 @@ function fetchTimerJobsFail(){
 		type: types.FETCH_TIMER_JOBS_FAIL,
 		joblist:[],
 		fetchstage: 'fail'
+	}
+}
+
+function processJobSuccess(result){
+	return {
+		type: types.PROCESSING_JOB_SUCCESS,
+		result:result,
+		processingJobStatus: 'success'
+	}
+}
+
+function processJobFail(result){
+	return {
+		type: types.PROCESSING_JOB_FAIL,
+		result: result,
+		processingJobStatus: 'fail'
 	}
 }

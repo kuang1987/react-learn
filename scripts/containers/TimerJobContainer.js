@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {ButtonToolbar,Button,Row,Col,Input,Panel,Modal} from 'react-bootstrap';
 import DataTable from '../components/DataTable';
 import TimerJobEditModal from '../components/TimerJobEditModal'
-import {fetchTimerJobs,editJob} from '../actions/timerJobActions';
+import {fetchTimerJobs,openOperateJobModal} from '../actions/timerJobActions';
 
 class TimerJobContainer extends Component {
 	constructor(props) {
@@ -30,9 +30,12 @@ class TimerJobContainer extends Component {
     	dispatch(fetchTimerJobs(this.state.search));
     }
 
-    handleEditBtn(type){
-    	const {dispatch} = this.props;
-    	dispatch(editJob(type))
+    handleEditBtn(operation){
+    	const {dispatch,selectedJobId} = this.props;
+    	if(selectedJobId == ""){
+    		return;
+    	}
+    	dispatch(openOperateJobModal(operation,selectedJobId))
     }
 
     /*jobSelected(){
@@ -48,7 +51,7 @@ class TimerJobContainer extends Component {
 
     }*/
     componentWillReceiveProps(nextProps){
-    	const {joblist,selectedJobId} = nextProps;
+    	const {joblist,selectedJobId,dispatch,operateJobModalShow} = nextProps;
     	if(selectedJobId){
     		for(let row in joblist){
     			if(joblist[row].jobId == selectedJobId){
@@ -57,6 +60,11 @@ class TimerJobContainer extends Component {
     			}
 
     		}
+    	}
+
+    	if(!operateJobModalShow && this.props.operateJobModalShow){
+    		this.setState({jobselected:false});
+    		dispatch(fetchTimerJobs(""));
     	}
 
     	if(nextProps.fetchstage == "fetching"){
@@ -103,17 +111,41 @@ class TimerJobContainer extends Component {
     }
 
     renderJobEditModal(){
-    	const {editJob,dispatch,selectedJobId} = this.props;
-    	console.log(editJob);
-    	if(editJob != ""){
-    		let title="新建任务";
-    		if(editJob == "update"){
-    			title="修改任务";
+    	const {operation,dispatch,selectedJobId,processingJobStatus,result,operateJobModalShow} = this.props;
+    	if(operateJobModalShow){
+    		let title = "";
+    		switch(operation){
+    			case "create":
+    				title = "新建任务";
+    				break;
+    			case "update":
+    				title = "更新任务";
+    				break;
+    			case "start":
+    				title = "启动任务";
+    				break;
+    			case "stop":
+    				title = "停止任务";
+    				break;
+    			case "delete":
+    				title = "删除任务";
+    				break;
+    			default:
+    			    return null;    				    				    				    			
     		}
-    		return <TimerJobEditModal title={title} dispatch={dispatch} jobId={selectedJobId}/>
+    		return (<TimerJobEditModal 
+    				title={title} 
+    				dispatch={dispatch} 
+    				selectedJobId={selectedJobId} 
+    				operation={operation}
+    				processingJobStatus={processingJobStatus}
+    				result={result}/>)
+
     	}
+
     	return null;
-    }
+   }
+    
 
 	render() {
 		return (
@@ -131,11 +163,11 @@ class TimerJobContainer extends Component {
     		<Row>
     			<Col lg={12} md={12} xs={12}>
     				<ButtonToolbar>
-    					<Button bsStyle="info" disabled={false} onClick={this.handleEditBtn.bind(this,"new")}>新建</Button>
+    					<Button bsStyle="info" disabled={false} onClick={this.handleEditBtn.bind(this,"create")}>新建</Button>
     					<Button bsStyle="info" disabled={!this.state.jobselected} onClick={this.handleEditBtn.bind(this,"update")}>更新</Button>
-    					<Button bsStyle="info" disabled={!this.state.jobselected || !this.state.jobrunning}>开始</Button>
-    					<Button bsStyle="info" disabled={!this.state.jobselected || this.state.jobrunning}>暂停</Button>
-    					<Button bsStyle="info" disabled={!this.state.jobselected}>删除</Button>
+    					<Button bsStyle="info" disabled={!this.state.jobselected || !this.state.jobrunning} onClick={this.handleEditBtn.bind(this,"start")}>开始</Button>
+    					<Button bsStyle="info" disabled={!this.state.jobselected || this.state.jobrunning} onClick={this.handleEditBtn.bind(this,"stop")}>暂停</Button>
+    					<Button bsStyle="info" disabled={!this.state.jobselected} onClick={this.handleEditBtn.bind(this,"delete")}>删除</Button>
     				</ButtonToolbar>
     			</Col>
     		</Row>
@@ -150,12 +182,15 @@ class TimerJobContainer extends Component {
 }
 
 function mapStateToProps(state) {
-	const {joblist,selectedJobId,fetchstage,editJob} = state.timerjob;
+	const {joblist,selectedJobId,fetchstage,operation,processingJobStatus,result,operateJobModalShow} = state.timerjob;
 	return {
 		joblist: joblist,
 		selectedJobId: selectedJobId,
 		fetchstage: fetchstage,
-		editJob: editJob
+		operation: operation,
+		processingJobStatus:processingJobStatus,
+		result:result,
+		operateJobModalShow:operateJobModalShow
 	};
 }
 
