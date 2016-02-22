@@ -25,7 +25,7 @@ export function timerJobSelected(jobId){
 
 export function openOperateJobModal(operation,jobId){
 	let processingJobStatus = undefined;
-	if(operation == "create"){
+	if(operation != "update"){
 		processingJobStatus = "success";
 	}
 	return {
@@ -79,27 +79,47 @@ function doFetchTimerJobs(search){
 	}
 }
 
-export function processJob(jobId,operation){
+export function processJob(params,operation){
 	return (dispatch) => {
 		dispatch(beginProcessJob());
-		dispatch(doProcessJob(jobId,operation));
+		dispatch(doProcessJob(params,operation));
 	}
 }
 
-function doProcessJob(jobId){
+function doProcessJob(params,operation){
 	return (dispatch) => {
-		const result = {jobId:jobId,
-						 jobName:"first Job",
-						 jobType:"ecc",
-						 jobScheType:"in",
-						 jobScheParams:"60",
-						 querydsl:"select * from 123",
-						 queryparams:"",
-						 scrpits:"",
-						 es_index:"order",
-						 es_type:"order",
-						 es_document_id:"merchant_order_id"}
-		setTimeout(()=>dispatch(processJobSuccess(result)),2000);
+		let method = "";
+		let url = "";
+		let baseJobUrl = "http://localhost:8081/jobs/"
+		if(!params.jobId && operation != "create"){
+			dispatch(processJobFail("jobId不能为空!"));
+			return;
+		}
+		switch(operation){
+			case "create":
+			    method = "POST";
+			    url = baseJobUrl;
+			    break;
+			case "get":
+				method = "GET";
+				url = baseJobUrl + params.jobId;
+				break;
+			case "update":
+			case "start":
+			case "stop":
+			    method = "PATCH";
+			    url = baseJobUrl + params.jobId;
+				break;
+			case "delete":
+				method = "DELETE";
+				url = baseJobUrl + params.jobId;
+				break;
+			default:
+			    dispatch(processJobFail("非法操作!"));
+			    break;
+		}
+
+		setTimeout(()=>dispatch(callApi(url,method,params)),2000);
 		//setTimeout(()=>dispatch(processJobFail("获取任务配置信息失败！")),2000);
 	}
 }
@@ -147,4 +167,36 @@ function processJobFail(result){
 		result: result,
 		processingJobStatus: 'fail'
 	}
+}
+
+
+//mock function
+function callApi(url,method,params){
+	return (dispatch)=>{
+			console.log(method);
+			if(method == "GET"){
+				let result = {jobId:"123",
+						 jobName:"first Job",
+						 jobType:"ecc",
+						 jobScheType:"in",
+						 jobScheParams:"60",
+						 querydsl:"select * from 123",
+						 queryparams:"",
+						 scrpits:"",
+						 es_index:"order",
+						 es_type:"order",
+						 es_document_id:"merchant_order_id"};
+				dispatch(processJobSuccess(result));
+			}else if(method== "PATCH"){
+				let result = "操作成功!";
+				dispatch(processJobSuccess(result));
+			}else if(method == "DELETE"){
+				let result = "操作成功!";
+				dispatch(processJobSuccess(result));
+			}else{
+				dispatch(processJobFail("操作失败！"));
+			}
+			
+	}
+					/**/
 }

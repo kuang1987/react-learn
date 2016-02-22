@@ -5,7 +5,8 @@ import {closeOperateJobModal,processJob} from '../actions/timerJobActions'
 class TimerJobEditModal extends Component {
 	constructor(props) {
         super(props);
-        this.state = {jobName:"",
+        this.state = {jobId:"",
+        			  jobName:"",
         			  jobType: "gw",
         			  jobScheType: "in",
     				  querydsl:"",
@@ -14,7 +15,9 @@ class TimerJobEditModal extends Component {
     				  es_index:"",
     				  es_type:"",
     				  es_document_id:"",
-    				  disabled:false}
+    				  disabled:false,
+    				  operation: "",
+    				  isInitModal:true}
     	this.jobTypeOptions = [{optionValue:"gw",optionName:"关务数据库(Mysql)"},
         			  		   {optionValue:"ecc",optionName:"ECC数据库(SqlServer)"},
         			  		   {optionValue:"es",optionName:"数据仓库(ElasticSearch)"}]
@@ -26,7 +29,23 @@ class TimerJobEditModal extends Component {
     handleSubmit(e){
     	e.preventDefault();
     	const {dispatch,operation,selectedJobId} = this.props;
-    	dispatch(processJob(selectedJobId,operation));
+    	let params = {};
+    	if(operation=="create" || operation == "update"){
+    		params = Object.assign({},this.state,{});
+    		delete params.disabled;
+    		delete params.operation;
+    		delete params.isInitModal;
+    	}else if(operation == "start"){
+    		params.jobId = selectedJobId;
+    		params.jobRunning = true;
+    	}else if(operation == "stop"){
+    		params.jobId = selectedJobId;
+    		params.jobRunning = true;
+    	}else if(operation == "delete"){
+    		params.jobId = selectedJobId;
+    	}
+    	dispatch(processJob(params,operation));
+    	this.setState({operation:operation,isInitModal:false});
     }
 
     back(e){
@@ -39,8 +58,10 @@ class TimerJobEditModal extends Component {
 
     	const {selectedJobId,operation,dispatch} = this.props;
     	if(selectedJobId && operation=="update"){
-    		dispatch(processJob(selectedJobId,"get"));
+    		let params = {jobId:selectedJobId}
+    		dispatch(processJob(params,"get"));
     	}
+    	this.setState({operation:operation,isInitModal:true});
     }
 
     handleChange(e){
@@ -52,11 +73,19 @@ class TimerJobEditModal extends Component {
 
     componentWillReceiveProps(nextProps){
     	if(nextProps.processingJobStatus=="success" && this.props.processingJobStatus != "success"){
-    		this.setState(Object.assign({},this.getState,nextProps.result));
-    		this.setState({disabled:false})
+    		if(this.state.isInitModal){
+    			this.setState(Object.assign({},this.getState,nextProps.result));
+    			this.setState({disabled:false});    			
+    		}else{
+    			this.setState({disabled:true});
+    		}
+
     	}
-    	if(nextProps.processingJobStatus=="fail" || nextProps.processingJobStatus=="processing"){
+    	if(nextProps.processingJobStatus=="processing"){
     		this.setState({disabled:true})
+    	}
+    	if(nextProps.processingJobStatus=="fail" && !this.state.isInitModal){
+    		this.setState({disabled:false})
     	}
     }
 
@@ -71,17 +100,12 @@ class TimerJobEditModal extends Component {
     }
 
     renderEditForm(){
-    	const {operation,processingJobStatus} = this.props;
-    	console.log(operation)
-    	console.log(processingJobStatus)
-    	if(processingJobStatus == "processing"){
-    		return (<p>加载中...</p>)
-    	}else if(processingJobStatus == "success"){
+    	const {operation} = this.props;
     		switch(operation){
     			case "create":
     			case "update":
     				let {selectedJobId} = this.props;
-    				if(operation == "new") {selectedJobId=""}
+    				if(operation == "create") {selectedJobId=""}
     				return (    <form>
     						<PanelGroup defaultActiveKey="1" accordion>
     						<Panel header="基本信息" eventKey="1">
@@ -120,9 +144,36 @@ class TimerJobEditModal extends Component {
 					return (<h4>确认删除该任务么?</h4>)
     		}
 
-    	}else if(processingJobStatus == "fail"){
-    		const {result} = this.props;
+    	
+    }
+
+    renderOperationResult(){
+    	const {processingJobStatus,result} = this.props;
+    	const {isInitModal} = this.state;
+    	console.log(isInitModal);
+    	if(processingJobStatus == "success"){
+    		if(isInitModal){
+    			return null;
+    		}else{
+    			return (<Alert bsStyle="info">{result}</Alert>);
+    		}
+    	}else if (processingJobStatus == "fail"){
     		return (<Alert bsStyle="danger">{result}</Alert>);
+    	}
+    }
+
+    renderModalBody(){
+    	const {operation,processingJobStatus} = this.props;
+    	const {isInitModal} = this.state;
+    	if(processingJobStatus == "processing"){
+    		return (<p>加载中...</p>)
+    	}else if(processingJobStatus == "success"){
+    		if(isInitModal){
+    			return this.renderEditForm();
+    		}
+    		return null;
+    	}else if( processingJobStatus == "fail"){
+    		return this.renderEditForm();
     	}
     }
 
@@ -134,7 +185,8 @@ class TimerJobEditModal extends Component {
             			<Modal.Title>{title}</Modal.Title>
           			</Modal.Header>
           			<Modal.Body>
-          				{this.renderEditForm()}
+          				{this.renderModalBody()}
+          				{this.renderOperationResult()}
           			</Modal.Body>
           			<Modal.Footer>
           				<Button bsStyle={"info"} onClick={this.handleSubmit.bind(this)} disabled={this.state.disabled}>确定</Button>

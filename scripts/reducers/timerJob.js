@@ -29,13 +29,15 @@ export default function(state=initialState,action){
 			return Object.assign({}, state, {
 			   operateJobModalShow: action.operateJobModalShow,
 			   selectedJobId: action.selectedJobId,
-			   operation:action.operation
+			   operation:action.operation,
+			   processingJobStatus: action.processingJobStatus
         	});
         case types.CLOSE_OPERATE_JOB_MODAL:
 			return Object.assign({}, state, {
 			   operateJobModalShow: action.operateJobModalShow,
 			   selectedJobId: action.selectedJobId,
-			   operation:action.operation
+			   operation:action.operation,
+			   result: action.result
         	});
         case types.OPERATE_JOB:
 			return Object.assign({}, state, {
