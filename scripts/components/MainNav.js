@@ -47,7 +47,7 @@ class MainNav extends Component {
                         </Navbar.Header>
                         <Navbar.Collapse>
                             <Nav>
-                                <NavItem eventKey={1} href="#">实时</NavItem>
+                                <NavItem eventKey={1} href="/realTime" onSelect={this.selectItem}>实时</NavItem>
                                 <NavItem eventKey={2} href="#">历史</NavItem>
                                 <NavItem eventKey={3} href="#">报警</NavItem>
                                 <NavDropdown eventKey={4} title="配置" id="config">

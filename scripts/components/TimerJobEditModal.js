@@ -9,6 +9,7 @@ class TimerJobEditModal extends Component {
         			  jobName:"",
         			  jobType: "gw",
         			  jobScheType: "in",
+        			  jobScheParams: "",
     				  querydsl:"",
     				  queryparams:"",
     				  scripts:"",

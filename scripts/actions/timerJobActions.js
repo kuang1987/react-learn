@@ -1,4 +1,5 @@
 import * as types from '../constants/actionTypes';
+import 'isomorphic-fetch';
 
 export function fetchTimerJobs(search=""){
 	return (dispatch) =>{
@@ -90,7 +91,7 @@ function doProcessJob(params,operation){
 	return (dispatch) => {
 		let method = "";
 		let url = "";
-		let baseJobUrl = "http://localhost:8081/jobs/"
+		let baseJobUrl = "//10.10.6.133:8080/api/v1/jobs/"
 		if(!params.jobId && operation != "create"){
 			dispatch(processJobFail("jobId不能为空!"));
 			return;
@@ -173,7 +174,7 @@ function processJobFail(result){
 //mock function
 function callApi(url,method,params){
 	return (dispatch)=>{
-			console.log(method);
+			/*console.log(method);
 			if(method == "GET"){
 				let result = {jobId:"123",
 						 jobName:"first Job",
@@ -195,7 +196,23 @@ function callApi(url,method,params){
 				dispatch(processJobSuccess(result));
 			}else{
 				dispatch(processJobFail("操作失败！"));
+			}*/
+
+		fetch(url,{method:method,headers:{"Content-Type":"application/json","Origin":"http://localhost:8080"},body: JSON.stringify(params)})
+		.then(res=>{
+			console.log(res.headers);
+			if(res.status == 200){
+				return res.json();
+			}else{
+				throw new Error("请求出错!")
 			}
+		})
+		.then(json=>{
+			dispatch(processJobSuccess(json.result));
+		})
+		.catch(err=>{
+			dispatch(processJobFail("请求出错"));
+		})
 			
 	}
 					/**/

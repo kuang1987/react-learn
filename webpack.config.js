@@ -22,7 +22,7 @@ module.exports = {
     module: {
         loaders: [
             { test: /\.js$/, loaders: ['react-hot','babel?presets[]=es2015&presets[]=react'], exclude: [nodeModulesDir]},
-            { test: /\.(scss|css)$/, loader: ExtractTextPlugin.extract('style', 'css!autoprefixer!sass') }
+            { test: /\.(scss|css)$/, loader: ExtractTextPlugin.extract('styless', 'css!autoprefixer!sass') }
         ]
     },
     plugins: [
